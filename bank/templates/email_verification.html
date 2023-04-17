@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel="icon" href="{% static 'images/logo/logo.svg' %}">
+
+        <title>iBank - Активація акаунту</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <style>
+            @media (min-width: 768px) {
+                #verificationCode {
+                    height: 4rem!important;
+                    font-size: 2rem!important;
+                }
+            }
+
+            #verificationCode{
+                height: 2rem;
+                font-size: 1rem;
+                width: fit-content;
+                justify-content: center;
+            }
+
+            .pincode-input{
+                transition: 0.25s;
+                text-align: center;
+                margin: 0.25rem;
+                border-radius: 0.5rem;
+                max-width: 4rem;
+                padding: 0;
+                border-color: #212529;
+                text-transform: uppercase;
+            }
+
+            .pincode-input:focus{
+                outline: none;
+                caret-color: transparent;
+                background-color: #dddddd;
+            }
+
+            h1{
+                font-size: 2.5rem;
+            }
+
+            body{
+                height: 100vh;
+                display:flex;
+                align-items:center;
+            }
+
+            .bi{
+                font-size: 4rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="text-center m-auto p-2" style="margin: 2rem" id="container">
+            <h1 class="mb-5">Активація акаунту</h1>
+            <p>Перейдіть за посиланням, надісланим на вашу електронну адресу,</p>
+            <p style="font-size: 1.5rem">або</p>
+            <p>введіть код:</p>
+            <div class="row row-cols-6 mx-auto flex-nowrap px-4" id="verificationCode"></div>
+            <div class="text-center pt-3" id="check"><i class="bi bi-x text-danger"></i></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/pincode-input@0.4.2/dist/pincode-input.min.js"></script>
+
+        <script>
+            let pincodeInput = new PincodeInput('#verificationCode', {
+                count: 6,
+                secure: false,
+                numeric: false,
+                onInput: (value) => {
+                    if (value.length === 6 && /^[A-Z0-9]*$/.test(value)){
+                        document.getElementById('check').innerHTML = '<div class="spinner-border text-dark" style="height: 4rem; width: 4rem"></div>';
+
+                        $.ajax({
+                        url: '/email_verification/',
+
+                        data: {'verification_code': value, 'user_id': '{{ user_id }}'},
+
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+
+                        method: 'POST',
+                    }).done(function (data, textStatus, jqXHR) {
+                        let response = jqXHR.responseText;
+
+                        if (response === 'verified'){
+                            document.getElementById('verificationCode').innerHTML = '';
+                            document.getElementById('container').innerHTML += '<a href="/login/" class="btn btn-outline-dark mt-5">Перейти на сторінку входу</a>';
+                            document.getElementById('check').innerHTML = '<i class="bi bi-check2 text-success"></i>';
+                        } else if (response === 'already_verified'){
+                            window.location.href = '/login/'
+                        } else {
+                            document.getElementById('check').innerHTML = '<i class="bi bi-x text-danger"></i>';
+                        }
+                    })
+                    } else {
+                        document.getElementById('check').innerHTML = '<i class="bi bi-x text-danger"></i>';
+                    }
+                }
+            })
+
+            document.onpaste = function (event){
+                document.getElementsByClassName('pincode-input--focused')[0].blur();
+                let pastedText = event.clipboardData.getData('Text');
+
+                let index = 0
+                for (let input of document.getElementsByClassName('pincode-input')){
+                    if (pastedText.length >= index + 1) {
+                        input.value = pastedText[index];
+                        input.classList.add('pincode-input--filled');
+                    } else {
+                        break
+                    }
+                    index ++;
+                }
+                pincodeInput.getValue();
+            }
+
+            window.onload = function (){
+                let firstSymbol = document.getElementsByClassName('pincode-input')[0];
+                firstSymbol.focus();
+            }
+
+            document.addEventListener('keydown', function (event){
+                let key = event.key;
+                let currentSymbol = document.getElementsByClassName('pincode-input--focused')[0];
+                if (key === 'Backspace'){
+                    if (currentSymbol.value){
+                        currentSymbol.value = '';
+                        currentSymbol.classList.remove('pincode-input--filled');
+                    }
+                }
+            })
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    </body>
+</html>

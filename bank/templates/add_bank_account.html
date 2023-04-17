@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Створення рахунку{% endblock %}
+
+{% block style %}
+            [name=title]:hover, [name=currency]:hover{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            [name=title]:focus, [name=currency]:focus{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            [name=title], [name=currency]{
+                border: 1px solid grey;
+                border-radius: 7px;
+                height: 40px;
+                width: 100%;
+                padding: 8px;
+            }
+
+            form{
+                min-width: 250px;
+                max-width: 300px;
+                width: 25%;
+            }
+{% endblock %}
+
+{% block page %}
+<h1>Створення банківського рахунку:</h1>
+<form action="" method="post" class="mx-auto">
+    {% csrf_token %}
+    {{ form.title }}<br>
+    {{ form.currency }}
+    <input type="submit" value="Створити" style="height: 40px; float: right" class="btn btn-dark shadow">
+</form>
+{% endblock %}

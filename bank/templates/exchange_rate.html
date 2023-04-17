@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Курс валют{% endblock %}
+
+{% block style_md %}
+                .nav-link{
+                    width: auto !important;
+                }
+{% endblock %}
+
+{% block style %}
+            [name=date]:hover, [name=currency]:hover{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            [name=date]:focus, [name=currency]:focus{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            [name=date], [name=currency], .btn{
+                border: 1px solid grey;
+                border-radius: 7px;
+                height: 40px;
+                padding: 8px;
+                width: 100%;
+            }
+
+            form {
+                max-width: 450px;
+            }
+
+            #date-input {
+                width: 75%;
+                min-width: auto;
+            }
+            #date-submit {
+                width: 25%;
+            }
+            .nav-link{
+                width: 100%;
+                text-align: center;
+            }
+{% endblock %}
+
+{% block page %}
+                {% load static %}
+                <nav>
+                    <div class="nav nav-tabs" id="period-nav" role="tablist" data-tabs="tabs">
+                        <a class="nav-link text-dark active" id="history" data-bs-toggle="tab" href="#history-page" role="tab" aria-selected="true">Історія <i class="bi-clock-history text-dark w-auto my-auto px-0" role="img"></i></a>
+                        <a class="nav-link text-dark" id="last-day" data-bs-toggle="tab" href="#last-day-page" role="tab" aria-selected="true" onclick="changeRate('day', 'UAH')">Останній день <img src="{% static 'images/calendars/calendar-1.svg' %}"></a>
+                        <a class="nav-link text-dark" id="last-week" data-bs-toggle="tab" href="#last-week-page" role="tab" aria-selected="false" onclick="changeRate('week', 'UAH')">Останній тиждень <img src="{% static 'images/calendars/calendar-7.svg' %}"></a>
+                        <a class="nav-link text-dark" id="last-month" data-bs-toggle="tab" href="#last-month-page" role="tab" aria-selected="false" onclick="changeRate('month', 'UAH')">Останній місяць <img src="{% static 'images/calendars/calendar-30.svg' %}"></a>
+                    </div>
+                </nav>
+                <h2>Базова валюта: Українська гривня (UAH)</h2>
+                <div class="tab-content" style="height: 60vh">
+                    <div class="tab-pane fade show active h-100" id="history-page" role="tabpanel">
+                        <div class="row row-cols-1 row-cols-md-2">
+                            <div class="col my-auto">
+                                <form method="post" class="mx-auto me-md-0">
+                                    {% csrf_token %}
+                                    <div class="input-group mb-1">
+                                        <input type="date" name="date" value="{{ date_input.value }}" min="{{ date_input.min }}" max="{{ date_input.value }}" id="date-input">
+                                        <input type="submit" value="Знайти" class="btn btn-dark" id="date-submit">
+                                    </div>
+                                    {{ form.currency }}
+                                </form>
+                            </div>
+                            <div class="col my-auto text-md-start text-center">
+                                <h1 style="font-size: 5rem" class="my-auto">{{ rate }}</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade pt-3 h-100" id="last-day-page" role="tabpanel">
+                        <div class="m-auto" style="width: min-content"><div class="spinner-border m-auto" style="width: 4rem; height: 4rem"></div></div>
+                        <p class="m-auto" style="width: min-content">Завантаження...</p>
+                    </div>
+                    <div class="tab-pane fade pt-3" id="last-week-page" role="tabpanel" style="height: 100%">
+                        <div class="m-auto" style="width: min-content"><div class="spinner-border m-auto" style="width: 4rem; height: 4rem"></div></div>
+                        <p class="m-auto" style="width: min-content">Завантаження...</p>
+                    </div>
+                    <div class="tab-pane fade pt-3" id="last-month-page" role="tabpanel" style="height: 100%">
+                        <div class="m-auto" style="width: min-content"><div class="spinner-border m-auto" style="width: 4rem; height: 4rem"></div></div>
+                        <p class="m-auto" style="width: min-content">Завантаження...</p>
+                    </div>
+                </div>
+{% endblock %}
+
+
+{% block script %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+        <script>
+            function renderRate(period, currency){
+                if (period === 'day'){
+                    if (!sessionStorage.getItem('currency')){
+                        changeRate(period, currency);
+                    }
+                    if (!document.getElementById('last-day-rate')){
+                        document.getElementById('last-day-page').innerHTML = sessionStorage.getItem('currency').replace('period', 'day').replace('id_currency', 'last-day-dropdown') + '<p class="text-center" id="last-day-rate" style="font-size: 5rem"></p>';
+                    }
+                    document.getElementById('last-' + period + '-rate').innerText = (1 / JSON.parse(sessionStorage.getItem(period + 'Rates'))['exchangeRates'][0][0][currency]).toFixed(3);
+                } else {
+                    if (!document.getElementById('last-' + period + '-chart')) {
+                        if (!document.getElementById('last-' + period + '-dropdown')){
+                            let html = sessionStorage.getItem('currency').replace('period', period).replace('id_currency', 'last-' + period + '-dropdown');
+                            document.getElementById('last-' + period + '-page').innerHTML = html + '<canvas id="last-' + period + '-chart"></canvas>';
+                        } else {
+                            document.getElementById('last-' + period + '-page').innerHTML += '<canvas id="last-' + period + '-chart"></canvas>';
+                        }
+                    }
+                    let currencyOptions = Array.from(document.getElementById('last-' + period + '-dropdown').options);
+                    for (let option of currencyOptions){
+                        option.removeAttribute('selected')
+                    }
+                    currencyOptions.find(item => item.value === currency).setAttribute('selected', true);
+
+                    let dateLabels = [];
+                    let exchangeRates = [];
+                    let rates = JSON.parse(sessionStorage.getItem(period + 'Rates'))['exchangeRates'];
+
+                    document.getElementById('last-' + period + '-chart').remove();
+                    document.getElementById('last-' + period + '-page').innerHTML += '<canvas id="last-' + period + '-chart"></canvas>';
+
+                    for (let rate of rates) {
+                        dateLabels.push(rate[1]);
+                        exchangeRates.push((1/rate[0][currency]).toFixed(3));
+                    }
+                    if (period === 'week') {
+                        const weekChart = createChart(dateLabels, exchangeRates, period);
+                    } else {
+                        const monthChart = createChart(dateLabels, exchangeRates, period);
+                    }
+                }
+            }
+
+
+            function changeRate(period, currency){
+                let today = new Date();
+                if (!sessionStorage.getItem(period+'Rates') || !sessionStorage.getItem('currency') || JSON.parse(sessionStorage.getItem(period+'Rates'))['date'] !== today.toISOString().slice(0, 10)){
+                    $.ajax({
+                        url: '/period_exchange_rate/',
+
+                        data: {
+                            'period': period,
+                        },
+
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+
+                        method: 'POST',
+
+                        dataType: 'html'
+                    }).done(function (data, textStatus, jqXHR) {
+                        let response = JSON.parse(jqXHR.responseText);
+                        sessionStorage.setItem(period+'Rates', JSON.stringify({date: response['date'], exchangeRates: response['ers']}));
+                        sessionStorage.setItem('currency', response['currencyDropdown'])
+                        renderRate(period, currency);
+                    })
+                } else {
+                    renderRate(period, currency);
+                }
+            }
+
+            function createChart(labels, data, period){
+                return new Chart(document.getElementById('last-' + period + '-chart').getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Курс',
+                                data: data,
+                                borderWidth: 1,
+                                backgroundColor: 'rgba('+[Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.3].join(',') + ')',
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            tooltips: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            hover: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+            }
+        </script>
+{% endblock %}

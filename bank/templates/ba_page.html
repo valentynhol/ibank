@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Рахунок: {{ ba.title }}{% endblock%}
+
+{% block style %}
+        tr:hover {
+            cursor: pointer;
+        }
+{% endblock %}
+
+{% block page %}
+    <h1 style="word-wrap: anywhere">{{ ba.title }}</h1>
+    <p><strong>Власник рахунку:</strong> {{ ba.full_name }}</p>
+    <p><strong>IBAN:</strong> {{ ba.iban }}</p>
+    <p><strong>Валюта:</strong> {{ ba.currency }}</p>
+    <p><strong>Баланс:</strong> {{ ba.balance }}</p>
+    <div class="row">
+        <a href="add_money/{{ ba.id }}" class="btn btn-success col col-auto m-1">Додати кошти</a>
+        {% if ba.balance >= 50 %}
+        <a href="withdraw_money/{{ ba.id }}" class="btn btn-danger col col-auto m-1">Зняти кошти</a>
+        {% endif %}
+        <a href="edit/{{ ba.id }}" class="btn btn-primary col col-auto m-1">Змінити</a>
+    </div>
+
+    <h1 class="mt-5 border-bottom">Транзакції</h1>
+    <div style="display: block; max-height: 40vh; position: relative; overflow: auto">
+        <table class="table table-striped table-hover">
+            <tbody>
+            {% if transactions %}
+            {% for transaction in transactions %}
+                {% if transaction.3 == 'income' %}
+                <tr class="table-success" style="height: 2rem" transaction-link="/transactions/{{ transaction.4 }}" onclick="window.location.href = this.getAttribute('transaction-link')">
+                {% else %}
+                <tr class="table-danger" style="height: 2rem" transaction-link="/transactions/{{ transaction.4 }}" onclick="window.location.href = this.getAttribute('transaction-link')">
+                {% endif %}
+                    <td style="word-wrap: anywhere">{{ transaction.0 }}</td>
+                    <td style="word-wrap: anywhere">{{ transaction.1 }}</td>
+                    <td class="text-end">{% if transaction.3 == 'income' %}+{% else %}-{% endif %}{{ transaction.2 }}{{ ba.currency }}</td>
+                </tr>
+            {% endfor %}
+            {% else %}
+                <h4 class="text-center">Немає транзакцій</h4>
+                <p class="text-secondary text-center" style="font-size: 0.75rem">Перекажіть комусь кошти, або дочекайтеся переказу на вашу картку, щоб побачити транзакції</p>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Картка: {{ card.title }}{% endblock%}
+
+{% block style %}
+        .card {
+            display: block;
+            position: relative;
+            top: 0;
+            left: 0;
+            border: none;
+            padding: 5px;
+            max-width: 400px;
+        }
+
+        .card-color {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .card-payment-system {
+            position: absolute;
+            right: 6%;
+            bottom: 6%;
+            width: 30%;
+        }
+
+        .card-num {
+            width: 100%;
+            position: absolute;
+            top: 22%;
+        }
+
+        .copy:hover{
+            transform: scale(0.9);
+            color: #ccc;
+            text-shadow: 0 0 2rem #000;
+            cursor: pointer;
+        }
+
+        .copy{
+            transition: transform 0.5s, color 0.5s, text-shadow 0.5s;
+            padding: 0;
+            color: #555;
+        }
+{% endblock %}
+
+{% block page %}{% load static %}
+    <div class="row row-cols-1 row-cols-md-2 g-3 w-100 ps-2" style="min-height: 100%; width: max-content">
+        <div class="col mx-auto me-xl-0 p-2" style="width: max-content; padding: 0">
+            <div class="card p-0">
+                <img class="card-color" src="{% static 'images/cards/color/'|add:card.color|add:'.svg' %}">
+                <img class="card-payment-system" src="{% static 'images/cards/payment_system/'|add:card.payment_system|add:'.png' %}">
+                <p class="card-num text-center"><span id="cardNumber">{{ card.number }}</span><span class="bi-clipboard2-fill copy" onclick="copyNumberToClipboard()" title="Копіювати номер"></span></p>
+            </div>
+        </div>
+        <div class="col mx-auto ms-xl-0 p-2" style="width: max-content">
+            <h1 style="word-wrap: anywhere">{{ card.title }}</h1>
+            <p><strong>Держатель картки:</strong> {{ card.cardholder }}</p>
+            <p><strong>CVV/CVC:</strong> {{ card.cvv }}</p>
+            <p><strong>Термін дії:</strong> {{ card.expiry_date }}</p>
+            <p><strong>Рахунок:</strong> {{ card.ba_title }} ({{ card.bank_account }})</p>
+            <p><strong>Валюта:</strong> {{ card.currency }}</p>
+            <div class="row m-1">
+                <a type="button" href="edit/{{ card.id }}" class="btn btn-secondary col col-auto m-1">Змінити</a>
+                {% if balance >= 10 %}
+                <a type="button" href="transfer_money/{{ card.id }}" class="btn btn-success col col-auto m-1">Переказати кошти</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 mt-3 start-50 translate-middle-x" style="z-index: 3">
+        <div id="copy" class="toast bg-dark bg-gradient text-light" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000" style="--bs-bg-opacity: .9">
+            <div class="toast-body">
+                <p class="m-auto text-center">Номер скопійовано</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+            <script src="https://cdn.jsdelivr.net/npm/fittext.js@1.2.0/jquery.fittext.js"></script>
+            <script>
+
+                let card = document.getElementsByClassName('card')[0];
+                window.onload = function (){jQuery(card).fitText(1.3)}
+
+                async function copyNumberToClipboard(){
+                    let card_num = document.getElementsByClassName('card-num')[0];
+                    try{
+                        await navigator.clipboard.writeText(card_num.innerText);
+                    } catch (e) {}
+
+                    document.getElementsByClassName('copy')[0].className = 'bi-check2 copy ms-1';
+                    const toast = new bootstrap.Toast(document.getElementById('copy'));
+                    toast.show();
+
+                    setTimeout(function () {
+                        document.getElementsByClassName('copy')[0].className = 'bi-clipboard2-fill copy ms-1';
+                    }, 2000);
+                }
+            </script>
+{% endblock %}

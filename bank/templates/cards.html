@@ -1,0 +1,133 @@
+{% extends 'base.html'%}
+
+{% block page_title %}Картки та рахунки{% endblock %}
+
+{% block style %}
+            .card {
+                transition: width 0.5s, height 0.5s, transform 0.5s;
+                position: relative;
+                min-width: 100px;
+                border: none;
+            }
+
+            .card-color {
+                transition: filter 0.5s;
+                position: relative;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background-color: #fff;
+                border-radius: 20px;
+            }
+
+            .card-payment-system {
+                position: absolute;
+                right: 6%;
+                bottom: 6%;
+                width: 30%;
+            }
+
+            .card-num {
+                position: absolute;
+                left: 0;
+                top: 21.5%;
+                width: 100%;
+            }
+
+            .card:hover{
+                transform: scale(1.05);
+                z-index: 1;
+            }
+
+            .card:hover .card-color{
+                filter: drop-shadow(0 0 0.3rem #4a4a4a);
+            }
+
+            .no-cards-img, .no-ba-img{
+                width: 2rem;
+            }
+
+            .bank-account{
+                transition: 0.5s;
+                position: relative;
+                background-color: #d6d6d6;
+                border-radius: 20px;
+            }
+
+            .bank-account:hover{
+                transform: scale(1.013);
+                filter: drop-shadow(0 0 0.3rem #4a4a4a);
+                z-index: 1;
+            }
+
+            .ba-balance{
+                margin: auto;
+            }
+
+            .ba-title{
+                word-wrap: anywhere;
+            }
+{% endblock %}
+
+{% block page %}
+    {% load static %}
+    <div class="row row-cols-lg-2">
+        <div class="mb-4">
+            <h1 class="border-bottom w-100">Банківські картки <a href="cards/create"><i class="bi bi-plus-circle-fill text-success text-end"></i></a></h1>
+
+            {% if cards %}
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-2 row-cols-xl-3 row-cols-xxl-4 text-center w-100 m-0">
+                {% for card in cards %}
+                    <div class="col p-1">
+                        <div class="card">
+                            <img class="card-color" src="{% static 'images/cards/color/'|add:card.color|add:'.svg' %}">
+                            <img class="card-payment-system" src="{% static 'images/cards/payment_system/'|add:card.payment_system|add:'.png' %}">
+                            <p class="card-num">{{ card.number }}</p>
+                            <a class="stretched-link" href='../cards/{{ card.id }}' title="{{ card.title }}" data-toggle="tooltip" data-bs-placement="bottom"></a>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <div class="w-100 text-start">
+                    <p class="no-cards text-muted">Схоже, що у вас немає банківських карт<img class="no-cards-img" src="{% static 'images/smiley.png' %}"></p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <h1 class="border-bottom w-100">Банківські рахунки <a href="bank_accounts/create"><i class="bi bi-plus-circle-fill text-success text-end"></i></a></h1>
+            {% if bank_accounts %}
+                {% for ba in bank_accounts %}
+                    <div class="bank-account row row-cols-1 row-cols-md-2 py-2 mx-1 w-auto my-2">
+                        <div class="col-md-8">
+                            <h3 class="ba-title">{{ ba.title }}</h3>
+                            <p class="ba-iban">Iban: {{ ba.iban }}</p>
+                            <p class="ba-currency">Валюта: {{ ba.currency }}</p>
+                            <a class="stretched-link" href='../bank_accounts/{{ ba.id }}'></a>
+                        </div>
+                        <div class="col-md-4 text-end ba-balance">
+                            <h4>{{ ba.balance }}</h4>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            {% else %}
+                <div class="w-100 text-start">
+                    <p class="no-ba text-muted">Схоже, що у вас немає банківських рахунків<img class="no-ba-img" src="{% static 'images/smiley.png' %}"></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+        <script src="https://cdn.jsdelivr.net/npm/fittext.js@1.2.0/jquery.fittext.js"></script>
+        <script>
+            let cards = document.getElementsByClassName('card');
+
+            for (let card of cards){
+                jQuery(card).fitText(1.3);
+            }
+        </script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Зняти кошти: {{ ba_title }}{% endblock %}
+
+{% block style %}
+            form{
+                min-width: 230px;
+                max-width: 450px;
+                width: 50%;
+            }
+{% endblock %}
+
+{% block page %}
+<h1 class="text-center">{{ ba_title }}</h1>
+<form action="" method="post" class="mx-auto">
+    {% csrf_token %}
+    <h3>Сума: <label for="money-range" id="money">100</label></h3>
+    <div class="row">
+        <a type="button" class="btn col col-auto" onclick="money('-')"><i class="bi-chevron-left"></i></a>
+        <input name="money" id="money-range" type="range" class="form-range col my-auto" min="100" max="{{ max_money }}" step="50" value="100" oninput="getElementById('money').innerText = this.value">
+        <a type="button" class="btn col col-auto" onclick="money('+')"><i class="bi-chevron-right"></i></a>
+    </div>
+    <a href="../{{ ba_id }}" style="height: 40px; float: left" class="btn btn-secondary mt-3 shadow ms-1">Скасувати</a><input type="submit" value="Зняти" style="height: 40px; float: right" class="btn btn-danger mt-3 shadow">
+</form>
+{% endblock %}
+{% block script %}
+<script>
+    function money(operation){
+        if (operation === '+'){
+            document.getElementById('money-range').value = parseInt(document.getElementById('money-range').value) + 50;
+        } else {
+            document.getElementById('money-range').value -= 50;
+        }
+        document.getElementById('money').innerText = document.getElementById('money-range').value;
+    }
+</script>
+{% endblock %}

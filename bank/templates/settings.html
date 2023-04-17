@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Налаштування{% endblock %}
+
+{% block style %}
+            [name=minutes], [name=seconds]{
+                border: 1px solid grey;
+                border-radius: 7px;
+                height: 40px;
+                width: 60px;
+                padding: 8px;
+            }
+
+            #name:hover, #lastname:hover, #patronymic:hover, [name=minutes]:hover, [name=seconds]:hover{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            #newPassword1:hover, #newPassword2:hover, #currentPassword:hover{
+                border: 2px solid black;
+            }
+
+            #name, #lastname, #patronymic {
+                border: 1px solid grey;
+                border-radius: 7px;
+                height: 40px;
+                width: 100%;
+                padding: 8px;
+            }
+
+            .password-container input {
+                border: 1px solid grey;
+                border-radius: 7px;
+                height: 40px;
+                padding: 8px;
+                flex: 1 1 auto;
+            }
+
+            .password-container {
+                width: 100%;
+            }
+
+            .small-form{
+                min-width: 230px;
+                max-width: 300px;
+                width: 25%;
+            }
+
+            label{
+                font-size: 0.75rem;
+            }
+
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 60px;
+                height: 34px;
+            }
+
+            .switch input {
+                display: none;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            .slider::before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: .4s;
+                transition: .4s;
+            }
+
+            input:checked + .slider {
+                background-color: #212529;
+            }
+
+            input:focus + .slider {
+                box-shadow: 0 0 1px #2196F3;
+            }
+
+            input:checked + .slider::before {
+                -webkit-transform: translateX(26px);
+                -ms-transform: translateX(26px);
+                transform: translateX(26px);
+            }
+
+            .slider.round {
+                border-radius: 34px;
+            }
+
+            .slider.round::before {
+                border-radius: 50%;
+            }
+{% endblock %}
+
+{% block page %}
+<h2 class="border-bottom">Акаунт</h2>
+<div class="row row-cols-1 row-cols-md-2">
+    <div>
+        <h3 class="text-center pt-4">Особиста інформація</h3>
+        <form action="" method="post" class="mx-auto small-form">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="personal_info">
+            <label for="name" class="text-disabled">Ім'я</label>
+            <input type="text" name="name" id="name" value="{{ name }}" class="mb-2">
+            <label for="lastname" class="text-disabled">Прізвище</label>
+            <input type="text" name="lastname" id="lastname" value="{{ last_name }}" class="mb-2">
+            <label for="patronymic" class="text-disabled">По-батькові</label>
+            <input type="text" name="patronymic" id="patronymic" value="{{ patronymic }}">
+            <input type="submit" value="Змінити" style="height: 40px; display: block; margin-left: auto" class="btn btn-success mt-3 shadow">
+        </form>
+    </div>
+    <div>
+        <h3 class="text-center pt-4">Зміна паролю</h3>
+        <form action="" method="post" class="mx-auto small-form">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="change_password">
+            <label for="currentPassword" class="text-disabled">Старий пароль</label>
+            <div class="input-group row row-cols-2 flex-nowrap mb-2 m-0 password-container">
+                <input type="password" name="current_password" id="currentPassword">
+                <button class="btn btn-outline-dark col-auto" type="button" onclick="showPassword('currentPassword', this.id)" id="currentPasswordBtn"><i class="bi-eye-fill"></i></button>
+            </div>
+            <label for="newPassword1" class="text-disabled">Новий пароль</label>
+            <div class="input-group row row-cols-2 flex-nowrap mb-2 m-0 password-container">
+                <input type="password" name="new_password1" id="newPassword1">
+                <button class="btn btn-outline-dark col-auto" type="button" onclick="showPassword('newPassword1', this.id)" id="newPassword1btn"><i class="bi-eye-fill"></i></button>
+            </div>
+            <label for="newPassword2" class="text-disabled">Новий пароль (ще раз)</label>
+            <div class="input-group row row-cols-2 flex-nowrap m-0 password-container">
+                <input class="" type="password" name="new_password2" id="newPassword2">
+                <button class="btn btn-outline-dark col-auto" type="button" onclick="showPassword('newPassword2', this.id)" id="newPassword2btn"><i class="bi-eye-fill"></i></button>
+            </div>
+            <input type="submit" value="Змінити" style="height: 40px; display: block; margin-left: auto" class="btn btn-success mt-3 shadow">
+        </form>
+    </div>
+</div>
+
+    <div class="my-4">
+        <div class="row border-bottom w-100 m-0">
+            <h2 class="col">Двоетапний вхід</h2>
+            <div class="col-auto d-flex m-auto">
+                <label class="switch mb-2">
+                    <input type="checkbox" oninput="updateSettings('2_step_login', this.checked)" {% if 2_step_login %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="my-4">
+        <div class="row border-bottom w-100 m-0">
+            <h2 class="col">Запитувати підтвердження важливих операцій</h2>
+            <div class="col-auto d-flex m-auto">
+                {% with "0 30 60 120 300 600" as list %}
+                <select class="btn btn-dark text-start mb-2" id="confirmOperations" onchange="selectConfirmOperationsValue(this)" {% if confirm_operations not in list.split and confirm_operations != '' %}{% endif %}>
+                    <option value="0" {% if confirm_operations == '0' %}selected{% endif %}>Завжди</option>
+                    <option value="30" {% if confirm_operations == '30' %}selected{% endif %}>Кожних 30с</option>
+                    <option value="60" {% if confirm_operations == '60' %}selected{% endif %}>Кожну хвилину</option>
+                    <option value="120" {% if confirm_operations == '120' %}selected{% endif %}>Кожні 2хв</option>
+                    <option value="300" {% if confirm_operations == '300' %}selected{% endif %}>Кожні 5хв</option>
+                    <option value="600" {% if confirm_operations == '600' %}selected{% endif %}>Кожні 10хв</option>
+                    <option value="" {% if confirm_operations == '' %}selected{% endif %}>Ніколи</option>
+                    {% if confirm_operations not in list.split and confirm_operations != '' %}<option value="{{ confirm_operations }}" selected>Свій період({{ confirm_operations_custom }})</option>{% endif %}
+                    <option value="custom">Свій період(обрати)</option>
+                </select>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="toast-container position-fixed top-0 mt-3 start-50 translate-middle-x" style="z-index: 3">
+        <div id="reset_password" class="toast bg-dark bg-gradient text-light" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000" style="--bs-bg-opacity: .9">
+        <div class="toast-body">
+            <p class="m-auto text-center">На вашу електронну адресу було надіслано посилання для скидання пароля</p>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block modal %}
+                <div class="modal fade" id="custom_time" tabindex="-1" aria-labelledby="custom_time" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="customTimeLabel">Вибрати свій період</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#custom_time" aria-label="Close"></button>
+                            </div>
+                            <form action="" method="post">
+                                <div class="modal-body">
+                                    <p>Виберіть час від 0 до 30хв</p>
+                                    <div class="row row-cols-2 flex-nowrap">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="type" value="set_custom_time">
+                                        <p class="col-auto"><input type="number" name="minutes" value="0" min="0" max="30"> хв</p>
+                                        <p class="col-auto"><input type="number" name="seconds" value="0" min="0" max="59"> c</p>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-target="#custom_time">Скасувати</button>
+                                    <input type="submit" value="Підтвердити" class="btn btn-success">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        window.onload = function () {
+            let select = document.getElementById('confirmOperations');
+            $(select).data('prev', select.value);
+        }
+
+
+        function updateSettings(type, value) {
+            $.ajax({
+                url: '',
+
+                data: {
+                    'type': type,
+                    'value': value,
+                },
+
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+
+                method: 'POST'
+            })
+        }
+
+        function selectConfirmOperationsValue(select) {
+            if (select.value !== 'custom') {
+                updateSettings('confirm_operations', select.value);
+            } else {
+                var myModal = new bootstrap.Modal(document.getElementById('custom_time'));
+                myModal.show();
+                let prev = $(select).data('prev')
+                document.getElementById('custom_time').addEventListener('hidden.bs.modal', function (){
+                    $('.modal-backdrop').remove();
+                    select.value = prev;
+                })
+            }
+            $(select).data('prev', select.value);
+        }
+
+        function sendResetMsg() {
+            document.getElementById('resetPassword').remove()
+            $.ajax({
+                url: '',
+
+                data: {
+                    'type': 'reset_password',
+                },
+
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+
+                method: 'POST'
+            }).done(function (data, textStatus, jqXHR) {
+                const toast = new bootstrap.Toast(document.getElementById('reset_password'));
+                toast.show();
+            })
+        }
+
+        function showPassword(inputId, buttonId) {
+            document.getElementById(inputId).setAttribute('type', 'text');
+            let btn = document.getElementById(buttonId);
+            btn.setAttribute('onclick', 'hidePassword("' + inputId + '", this.id)');
+            btn.innerHTML = '<i class="bi-eye-slash-fill"></i>';
+        }
+
+        function hidePassword(inputId, buttonId) {
+            document.getElementById(inputId).setAttribute('type', 'password');
+            let btn = document.getElementById(buttonId);
+            btn.setAttribute('onclick', 'showPassword("' + inputId + '", this.id)');
+            btn.innerHTML = '<i class="bi-eye-fill"></i>';
+        }
+    </script>
+{% endblock %}

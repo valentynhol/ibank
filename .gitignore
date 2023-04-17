@@ -1,0 +1,4 @@
+/bank_root/local_settings.py
+/db.sqlite3
+/venv
+/bank_root/.env

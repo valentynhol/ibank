@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Транзакція{% endblock %}
+
+{% block style_md%}
+{% endblock %}
+{% block style %}
+{% endblock %}
+
+{% block page %}
+<h1 class="text-center mb-5">Транзакція</h1>
+    {% if income %}
+        <h2>Отримано <span class="text-success">{{ receiver_money }}{{ receiver_currency }}</span> від {{ sender }}</h2>
+        <p><strong>Рахунок відправника:</strong> {{ sender_iban }}</p>
+        <p><strong>Рахунок, на який надійшли кошти:</strong> {{ receiver_iban }}</p>
+        {% if msg %}<p style="word-wrap: anywhere"><strong>Коментар відправника:</strong> {{ msg }}</p>{% endif %}
+    {% elif in_account %}
+        <h2>Перераховано кошти на інший рахунок</h2>
+        <p><strong>Рахунок, з якого перераховано:</strong> {{ sender_iban }}</p>
+        <p><strong>Рахунок, на який перераховано:</strong> {{ receiver_iban }}</p>
+        <p><strong>Відправлена сума:</strong> {{ sender_money }}{{ sender_currency }}</p>
+        <p><strong>Отримана сума:</strong> {{ receiver_money }}{{ receiver_currency }}</p>
+        {% if msg %}<p style="word-wrap: anywhere"><strong>Ваш коментар:</strong> {{ msg }}</p>{% endif %}
+    {% else %}
+        <h2>Відправлено <span class="text-danger">{{ sender_money }}{{ sender_currency }}</span> до {{ receiver }}</h2>
+        <p><strong>Рахунок, з якого відправлено кошти:</strong> {{ sender_iban }}</p>
+        <p><strong>Рахунок, на який відправлено кошти:</strong> {{ receiver_iban }}</p>
+        {% if msg %}<p style="word-wrap: anywhere"><strong>Ваш коментар:</strong> {{ msg }}</p>{% endif %}
+    {% endif %}
+{% endblock %}

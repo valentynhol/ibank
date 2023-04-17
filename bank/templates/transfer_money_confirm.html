@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Підтвердження переказу{% endblock %}
+
+{% block style_md%}
+            #recipient{
+                    border-right: 1px solid;
+                    border-bottom: none !important;
+                }
+{% endblock %}
+{% block style %}
+            #recipient{
+                border-bottom: 1px solid;
+            }
+{% endblock %}
+
+{% block page %}
+<h1 class="text-center">Переказ коштів</h1>
+<div class="row row-cols-1 row-cols-md-2">
+    <div class="col" id="recipient">
+        <h2>Отримувач:</strong></h2>
+        <p>{{ recipient.full_name }}</p>
+        <p><strong>Картка:</strong> {{ recipient.card }}</p>
+        <p><strong>Рахунок:</strong> {{ recipient.iban }}</p>
+        <h3 class="text-success col mt-3"><strong>Отримана сума:</strong> {{ receiver_money }}{{ recipient.currency }}</h3>
+    </div>
+    <div class="col" id="sender">
+        <h2>Відправник:</h2>
+        <p>{{ sender.full_name }}</p>
+        <p><strong>Картка:</strong> {{ sender.card }}</p>
+        <p><strong>Рахунок:</strong> {{ sender.iban }}</p>
+        <h3 class="text-danger col mt-3"><strong>Відправлена сума:</strong> {{ sender_money }}{{ sender.currency }}</h3>
+    </div>
+</div>
+<p class="text-center mt-3" style="word-wrap: anywhere"><strong>Коментар:</strong> {{ msg }}</p>
+
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="confirm">
+    <a href="../{{ card_id }}" style="height: 40px; float: left" class="btn btn-secondary mt-3 shadow m-1">Скасувати</a>
+    <input type="submit" value="Підтвердити" style="height: 40px; float: right" class="btn btn-success mt-3 shadow m-1">
+</form>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link rel="icon" href="{% static 'images/logo/logo.svg' %}">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <title>iBank - 404 Сторінку не знайдено</title>
+
+        <style>
+            a::before{
+                content: '';
+                background-color: #000;
+                transition: 0.3s ease-in-out;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                height: 2px;
+                z-index: -1;
+            }
+
+            a {
+                text-decoration: none;
+                transition: 0.3s ease-in-out;
+                color: #212529;
+                position: relative;
+                display: inline-block;
+            }
+
+            a:hover{
+                color: #f8f9fa;
+                cursor: pointer;
+            }
+
+            a:hover::before{
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body class="text-dark">
+        <div class="w-100 bg-dark py-2 d-flex">
+            <img src="{% static 'images/logo/logo_light.svg' %}">
+            <h1 class="text-light my-auto" style="margin-left: 2vw">404</h1>
+        </div>
+        <div style="margin: 3vw">
+            <h2 class="mt-4">Сторінку не знайдено</h2>
+            <p>Вибачте, ми не можемо знайти цю сторінку. Краще перейдіть на <a class="px-1" href="/"><strong>головну сторінку</strong></a> і пошукайте посилання там.</p>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    </body>
+</html>

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Зміна рахунку: {{ ba_title }}{% endblock %}
+
+{% block style %}
+            [name=title]:hover{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            [name=title]:focus{
+                border: 2px solid black;
+                border-radius: 7px;
+            }
+
+            [name=title]{
+                border: 1px solid grey;
+                border-radius: 7px;
+                height: 40px;
+                width: 100%;
+                padding: 8px;
+            }
+
+            form{
+                min-width: 230px;
+                max-width: 300px;
+                width: 25%;
+            }
+{% endblock %}
+
+{% block page %}
+<h1 class="text-center" style="word-wrap: anywhere">{{ ba_title }}</h1>
+<form action="" method="post" class="mx-auto">
+    {% csrf_token %}
+    {{ form.title }}<br>
+    <a href="../{{ ba_id }}" style="height: 40px; float: left" class="btn btn-secondary mt-3 shadow ms-1">Скасувати</a><input type="submit" value="Змінити" style="height: 40px; float: right" class="btn btn-success mt-3 shadow">
+</form>
+{% endblock %}
