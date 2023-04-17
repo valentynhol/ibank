@@ -28,7 +28,7 @@ except ImportError:
     BASE_DIR = Path(__file__).resolve().parent.parent
     SECRET_KEY = 'django-insecure-fd%2&eksmyrh&2hxk+@i$x$w*q_)c)6#w9rd_rvbc*pyk@siwn'
     DEBUG = False
-    ALLOWED_HOSTS = ['ibank-gh.herokuapp.com']
+    ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
     DATABASES = {
         'default': {
@@ -105,7 +105,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'bank_root.wsgi.application'
+WSGI_APPLICATION = 'bank_root.wsgi.app'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
