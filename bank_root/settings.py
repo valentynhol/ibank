@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 
 import os
-import sys
 import environ
 
 from pathlib import Path
@@ -25,43 +24,10 @@ environ.Env.read_env()
 try:
     from .local_settings import *
 except ImportError:
-    BASE_DIR = Path(__file__).resolve().parent.parent
+
     SECRET_KEY = 'django-insecure-fd%2&eksmyrh&2hxk+@i$x$w*q_)c)6#w9rd_rvbc*pyk@siwn'
     DEBUG = False
-    ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-    AUTH_PASSWORD_VALIDATORS = [
-        {
-            'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-        },
-        {
-            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        },
-        {
-            'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-        },
-        {
-            'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-        },
-    ]
-
-    MIDDLEWARE = [
-        'django.middleware.security.SecurityMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'whitenoise.middleware.WhiteNoiseMiddleware',
-    ]
+    ALLOWED_HOSTS = ['.vercel.app']
 
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
@@ -76,6 +42,8 @@ except ImportError:
     )
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -88,6 +56,31 @@ INSTALLED_APPS = [
     'bank.apps.BankConfig',
 ]
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+]
 
 TEMPLATES = [
     {
@@ -139,6 +132,17 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ibank.gh.noreply@gmail.com'
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'URL': env('POSTGRES_URL'),
+        'NAME': env(''),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env(''),
+        'HOST': env('POSTGRES_HOST'),
+        'PORT': env(''),
+    }
+}
 
 LOGGING = {
     'version': 1,
