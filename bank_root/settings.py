@@ -29,8 +29,6 @@ except ImportError:
     DEBUG = False
     ALLOWED_HOSTS = ['.vercel.app']
     SECURE_SSL_REDIRECT = True
-
-    STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 
@@ -123,6 +121,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ibank.gh.noreply@gmail.com'
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
 
