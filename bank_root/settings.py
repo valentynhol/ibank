@@ -133,12 +133,12 @@ CSRF_COOKIE_SECURE = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'URL': env('POSTGRES_URL'),
-        'NAME': env(''),
-        'USER': env('POSTGRES_USER'),
-        'PASSWORD': env(''),
-        'HOST': env('POSTGRES_HOST'),
-        'PORT': env(''),
+        'URL': env('PG_URL'),
+        'NAME': env('PG_DATABASE'),
+        'USER': env('PG_USER'),
+        'PASSWORD': env('PG_PASSWORD'),
+        'HOST': env('PG_HOST'),
+        'PORT': env('PG_PORT'),
     }
 }
 
