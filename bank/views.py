@@ -135,10 +135,11 @@ def user_signup(request):
                     user.verification_code = make_password(verification_code)
                     user.save()
                     __send_email(user.email, 'email_verification',
-                                 {'code': verification_code,
+                                 {
+                                  'code': verification_code,
                                   'name': f'{user.first_name} {user.last_name}',
-                                  'link': f'https://ibank-gh.herokuapp.com/email_verification/'
-                                          f'{user.id}/{verification_code}'}, 'Активація акаунту')
+                                  'link': f'https://{request.META["HTTP_HOST"]}/email_verification/{user.id}/{verification_code}'
+                                 }, 'Активація акаунту')
 
                 return render(request, 'email_verification.html', {'user_id': user.id})
             except IntegrityError as signup_error:
@@ -1064,7 +1065,7 @@ def send_password_reset_email(request):
             user = User.objects.get(email=request.POST['email'])
 
             password_reset_code = hashlib.sha256(bytes(user.email +
-                                                str(datetime.datetime.timestamp(datetime.datetime.now())) +
+                                                 str(datetime.datetime.timestamp(datetime.datetime.now())) +
                                                 'adjwod', 'UTF-8')).hexdigest()
 
             user.password_reset_code = password_reset_code
@@ -1072,8 +1073,9 @@ def send_password_reset_email(request):
             user.save()
 
             __send_email(user.email, 'reset_password',
-                         {'link': f'https://ibank-gh.herokuapp.com/reset_password/{password_reset_code}'},
-                         'Скидання пароля')
+                         {
+                          'link': f'https://{request.META["HTTP_HOST"]}/reset_password/{password_reset_code}'
+                         }, 'Скидання пароля')
 
             email_sent = True
 
