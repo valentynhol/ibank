@@ -30,6 +30,7 @@ except ImportError:
     ALLOWED_HOSTS = ['.vercel.app']
     SECURE_SSL_REDIRECT = True
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+    CSRF_TRUSTED_ORIGINS = ["https://ibank-gh.vercel.app"]
 
 
 # Application definition
@@ -112,8 +113,6 @@ AUTH_USER_MODEL = 'bank.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login'
-
-CSRF_TRUSTED_ORIGINS = ["https://ibank-gh.herokuapp.com"]
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
